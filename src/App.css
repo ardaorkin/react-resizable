@@ -32,10 +32,12 @@ table {
   border-spacing: 0;
   width: 100%;
   border: 1px solid #ddd;
-  min-width: 600px;
-  max-width: unset;
+  min-width: 400px;
 }
 
+th {
+  width: 150px;
+}
 th,
 td {
   text-align: left;
