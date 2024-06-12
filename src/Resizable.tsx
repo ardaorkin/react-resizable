@@ -8,13 +8,19 @@ import {
   useRef,
 } from "react";
 
+export type ResizableEventsParams = {
+  event: MouseEvent;
+  element: HTMLElement | null;
+  width: number;
+};
+
 const noop = () => {};
 
 export type ResizableWrapperProps = {
   maxWidth?: number;
   minWidth?: number;
-  onResize?: (width: number) => void;
-  onResizeEnd?: (width: number) => void;
+  onResize?: ({ event, element, width }: ResizableEventsParams) => void;
+  onResizeEnd?: ({ event, element, width }: ResizableEventsParams) => void;
   onResizeStart?: () => void;
 };
 
@@ -34,7 +40,6 @@ export const ResizableWrapper = forwardRef<
     ref,
   ): ReactNode => {
     const resizeHandlerRef = useRef<HTMLSpanElement | null>(null);
-
     const handleResize = useCallback(
       (event: MouseEvent) => {
         const { clientX } = event;
@@ -48,15 +53,15 @@ export const ResizableWrapper = forwardRef<
 
           const newWidth = distance + parent.offsetWidth;
           if (maxWidth && newWidth > maxWidth) {
-            onResizeEnd(maxWidth);
+            onResizeEnd({ event, element: parent, width: maxWidth });
             return;
           }
           if (minWidth && newWidth < minWidth) {
-            onResizeEnd(minWidth);
+            onResizeEnd({ event, element: parent, width: minWidth });
             return;
           }
           if (newWidth > 0) {
-            onResize(newWidth);
+            onResize({ event, element: parent, width: newWidth });
             parent.style.width = `${newWidth}px`;
           }
         }
@@ -64,13 +69,22 @@ export const ResizableWrapper = forwardRef<
       [maxWidth, minWidth, onResize, onResizeEnd],
     );
 
-    const handleResizeEnd = useCallback(() => {
-      const parentWidth =
-        resizeHandlerRef.current?.parentElement?.offsetWidth || 0;
-      onResizeEnd(parentWidth || 0);
-      document.removeEventListener("mousemove", handleResize);
-      document.removeEventListener("mouseup", handleResizeEnd);
-    }, [handleResize, onResizeEnd]);
+    const handleResizeEnd = useCallback(
+      (event: MouseEvent) => {
+        const parentWidth =
+          resizeHandlerRef.current?.parentElement?.offsetWidth || 0;
+        onResizeEnd({
+          event,
+          element: resizeHandlerRef.current
+            ? resizeHandlerRef.current.parentElement
+            : null,
+          width: parentWidth || 0,
+        });
+        document.removeEventListener("mousemove", handleResize);
+        document.removeEventListener("mouseup", handleResizeEnd);
+      },
+      [handleResize, onResizeEnd],
+    );
 
     const handleResizeStart = useCallback(
       (event: MouseEvent) => {
