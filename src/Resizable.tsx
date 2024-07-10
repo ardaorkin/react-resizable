@@ -22,6 +22,9 @@ export type ResizableWrapperProps = {
   onResize?: ({ event, element, width }: ResizableEventsParams) => void;
   onResizeEnd?: ({ event, element, width }: ResizableEventsParams) => void;
   onResizeStart?: () => void;
+  gripSizeRem: string;
+  rightEdgeRem: string;
+  showGrip: boolean;
 };
 
 export const ResizableWrapper = forwardRef<
@@ -36,8 +39,11 @@ export const ResizableWrapper = forwardRef<
       onResize = noop,
       onResizeEnd = noop,
       onResizeStart = noop,
+      gripSizeRem = 0.4,
+      rightEdgeRem = 0,
+      showGrip = false,
     },
-    ref,
+    ref
   ): ReactNode => {
     const resizeHandlerRef = useRef<HTMLSpanElement | null>(null);
     const handleResize = useCallback(
@@ -66,7 +72,7 @@ export const ResizableWrapper = forwardRef<
           }
         }
       },
-      [maxWidth, minWidth, onResize, onResizeEnd],
+      [maxWidth, minWidth, onResize, onResizeEnd]
     );
 
     const handleResizeEnd = useCallback(
@@ -83,7 +89,7 @@ export const ResizableWrapper = forwardRef<
         document.removeEventListener("mousemove", handleResize);
         document.removeEventListener("mouseup", handleResizeEnd);
       },
-      [handleResize, onResizeEnd],
+      [handleResize, onResizeEnd]
     );
 
     const handleResizeStart = useCallback(
@@ -93,7 +99,7 @@ export const ResizableWrapper = forwardRef<
         document.addEventListener("mousemove", handleResize);
         document.addEventListener("mouseup", handleResizeEnd);
       },
-      [handleResize, handleResizeEnd, onResizeStart],
+      [handleResize, handleResizeEnd, onResizeStart]
     );
 
     useEffect(() => {
@@ -103,7 +109,7 @@ export const ResizableWrapper = forwardRef<
         return () => {
           resizeHandlerElement.removeEventListener(
             "mousedown",
-            handleResizeStart,
+            handleResizeStart
           );
         };
       }
@@ -123,9 +129,14 @@ export const ResizableWrapper = forwardRef<
           key="resize-handler"
           ref={resizeHandlerRef}
           className="resizeHandler"
+          style={{
+            insetInlineEnd: `-${rightEdgeRem}rem`,
+            width: `${gripSizeRem}rem`,
+            backgroundColor: showGrip ? "rgb(0, 0, 255)" : "transparent",
+          }}
         />,
       ],
       ref,
     });
-  },
+  }
 );

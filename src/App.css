@@ -12,11 +12,12 @@ body {
 .resizeHandler {
   position: absolute;
   background-color: transparent;
-  width: 6px;
+  width: 0.6rem;
   height: 100%;
-  inset-inline-end: 0;
+  inset-inline-end: -0.3rem;
   inset-block-start: 0;
   cursor: col-resize;
+  background-color: red;
 }
 
 .resizeHandler:hover {
@@ -47,4 +48,26 @@ td {
 
 tr:nth-child(even) {
   background-color: #f2f2f2;
+}
+
+.options {
+  display: flex;
+  margin: 2rem;
+  flex-direction: row;
+  gap: 2rem;
+}
+
+.option {
+  display: flex;
+  margin: 2rem;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+tr:last-child {
+  overflow: hidden;
+}
+
+thead > tr > th:last-child {
+  overflow: hidden;
 }
